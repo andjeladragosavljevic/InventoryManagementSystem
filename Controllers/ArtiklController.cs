@@ -1,73 +1,72 @@
 ﻿namespace InventoryManagementSystem.Controllers
 {
     [ApiController]
-    [Route("api/controller")]
+    [Route("api/[controller]")]
     //[Authorize]
     public class ArtiklController(Context db) : Controller
     {
-        private readonly Context _db = db;
 
-   
-
-        [HttpPost("add")]
-        public IActionResult AddArtikl(ArtiklDTO request)
+        [HttpPost]
+        public IActionResult AddArticle(ArtiklDTO request)
         {
-            var atributs = new List<AtributUArtiklu>();
 
-            Artikl artikl = new Artikl()
+            Artikl article = new()
             {
                 Code = request.Code,
                 Name = request.Name,
                 MeasuringUnit = request.MeasuringUnit
             };
 
-            _db.Add(artikl);
-            _db.SaveChanges();
+            db.Add(article);
+            db.SaveChanges();
 
-            if (request.Atributs != null)
+            if (request.Attributes is not null)
             {
-                foreach (var atr in request.Atributs)
+                var attributes = new List<AtributUArtiklu>();
+                foreach (var attribute in request.Attributes)
                 {
-                    var atribut = _db.Atributi.Find(atr.AtributID);
-                    if (atribut != null && atr.Value != null)
+                  
+                    if (db.Atributi.Find(attribute.AtributID) is var existingAttribute and not null && attribute.Value is not null)
                     {
-                        var atrUArtiklu = new AtributUArtiklu()
+                        var attributeInArticle = new AtributUArtiklu()
                         {
-                            Atribut = atribut,
-                            AtributID = atr.AtributID,
-                            Artikl = artikl,
-                            ArtiklID = artikl.Id,
-                            Value = atr.Value
+                            Atribut = existingAttribute,
+                            AtributID = attribute.AtributID,
+                            Artikl = article,
+                            ArtiklID = article.Id,
+                            Value = attribute.Value
 
                         };
 
-                        atributs.Add(atrUArtiklu);
-                    }
-
+                        attributes.Add(attributeInArticle);
+                    };
 
                 }
 
-                _db.AddRange(atributs);
+                db.AddRange(attributes);
             }
-            _db.SaveChanges();
-            return Ok(artikl);
+
+            db.SaveChanges();
+            return Ok(article);
         }
 
-        [HttpDelete("delete")]
-        public IActionResult DeleteArtikl(int id)
+        [HttpDelete]
+        public IActionResult DeleteArticle(int id)
         {
-            var artikl = _db.Artikli.Find(id);
-            if (artikl == null)
+            var article = db.Artikli.Find(id);
+
+            if (article is null)
                 return NotFound();
-            _db.Artikli.Remove(artikl);
-            _db.SaveChanges(true);
-            return Ok(artikl);
+
+            db.Artikli.Remove(article);
+            db.SaveChanges(true);
+            return Ok(article);
         }
 
-        [HttpPut("edit")]
+        [HttpPut]
         public IActionResult EditArtikl(ArtiklEditDTO request)
         {
-            var oldArticle = _db.Artikli.FirstOrDefault(a => a.Id == request.Id);
+            var oldArticle = db.Artikli.FirstOrDefault(a => a.Id == request.Id);
 
             if (oldArticle is null)
                 return BadRequest();
@@ -81,12 +80,12 @@
 
                 foreach (var attribute in request.Attributes)
                 {
-                    var oldAttribute = _db.AtributiUArtiklu.Find(attribute.AtributID, request.Id);
+                    var oldAttribute = db.AtributiUArtiklu.Find(attribute.AtributID, request.Id);
 
                     switch (oldAttribute)
                     {
                         case not null when attribute.Value is not null: oldAttribute.Value = attribute.Value; break;
-                        case null when attribute.Value is not null && _db.Atributi.Find(attribute.AtributID) is var existingAttribute and not null:
+                        case null when attribute.Value is not null && db.Atributi.Find(attribute.AtributID) is var existingAttribute and not null:
                             var newAttributeInArticle = new AtributUArtiklu()
                             {
                                 Artikl = oldArticle,
@@ -95,59 +94,79 @@
                                 AtributID = existingAttribute.Id,
                                 Value = attribute.Value
                             };
-                            _db.AtributiUArtiklu.Add(newAttributeInArticle);
+                            db.AtributiUArtiklu.Add(newAttributeInArticle);
                             break;
                     }
 
                 }
             }
 
-            _db.SaveChanges();
+            db.SaveChanges();
             return Ok();
 
 
         }
 
-        [HttpGet("get")]
-        public async Task<ActionResult> Get()
+        [HttpGet]
+        public async Task<ActionResult> GetAsync()
         {
-            var artikli = await _db.Artikli.Include(a => a.AtributiUArtiklu).ToListAsync();
-            return Ok(artikli);
+            var articles = await db.Artikli.Include(a => a.AtributiUArtiklu).AsNoTracking().ToListAsync();
+            return Ok(articles);
         }
 
-        [HttpGet("get/id")]
-        public async Task<ActionResult> GetById(int id)
+        [HttpGet("/id/{id}")]
+        public async Task<ActionResult> GetByIdAsync(int id)
         {
-            var artikli = await _db.Artikli.Include(a => a.AtributiUArtiklu).Where(a => a.Id == id).ToListAsync();
-            return Ok(artikli);
+            var article = await db.Artikli.Include(a => a.AtributiUArtiklu).AsNoTracking().SingleOrDefaultAsync(a => a.Id == id);
+
+            if(article is null) 
+                return NotFound();
+
+            return Ok(article);
         }
 
-        [HttpGet("get/code")]
-        public async Task<ActionResult> GetByCode(string value)
+        [HttpGet("/code/{code}")]
+        public async Task<ActionResult> GetByCodeAsync(string code)
         {
-            var artikli = await _db.Artikli.Include(a => a.AtributiUArtiklu).Where(a => value.Equals(a.Code)).ToListAsync();
-            return Ok(artikli);
+            var article = await db.Artikli.Include(a => a.AtributiUArtiklu).AsNoTracking().SingleOrDefaultAsync(a => code.Equals(a.Code));
+
+            if (article is null)
+                return NotFound();
+
+            return Ok(article);
         }
 
-        [HttpGet("get/measuringUnit")]
-        public async Task<ActionResult> GetByMeasuringUnit(string value)
+        [HttpGet("/measuringUnit")]
+        public async Task<ActionResult> GetByMeasuringUnitAsync(string value)
         {
-            var artikli = await _db.Artikli.Include(a => a.AtributiUArtiklu).Where(a => value.Equals(a.MeasuringUnit)).ToListAsync();
-            return Ok(artikli);
+            var articles = await db.Artikli.Include(a => a.AtributiUArtiklu).Where(a => value.Equals(a.MeasuringUnit)).AsNoTracking().ToListAsync();
+
+            if (articles is null || articles.Count == 0)
+                return NotFound();
+
+            return Ok(articles);
         }
 
-        [HttpGet("get/name")]
-        public async Task<ActionResult> GetByName(string value)
+        [HttpGet("/name")]
+        public async Task<ActionResult> GetByNameAsync(string value)
         {
-            var artikli = await _db.Artikli.Include(a => a.AtributiUArtiklu).Where(a => value.Equals(a.Name)).ToListAsync();
-            return Ok(artikli);
+            var articles = await db.Artikli.Include(a => a.AtributiUArtiklu).Where(a => value.Equals(a.Name)).AsNoTracking().ToListAsync();
+
+            if (articles is null || articles.Count == 0)
+                return NotFound();
+
+            return Ok(articles);
         }
 
-        [HttpGet("get/atribut")]
-        public async Task<ActionResult> GetByAtribut(int id, string value)
+        [HttpGet("/attribute/{id}/{value}")]
+        public async Task<ActionResult> GetByAttributeAsync(int id, string value)
         {
-            var artikli = await _db.AtributiUArtiklu.Where(atr => atr.AtributID.Equals(id) && value.Equals(atr.Value)).Include(a => a.Artikl).ToListAsync();
-            return Ok(artikli);
+            var articles = await db.AtributiUArtiklu.Include(a => a.Artikl).Where(atr => atr.AtributID.Equals(id) && value.Equals(atr.Value)).Include(a => a.Artikl).AsNoTracking().ToListAsync();
+           
+            if (articles is null || articles.Count == 0)
+                return NotFound();
+
+            return Ok(articles);
         }
     }
 }
