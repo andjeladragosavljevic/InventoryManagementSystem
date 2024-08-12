@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using InventoryManagementSystem.Models;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 namespace InventoryManagementSystem.Controllers
 {

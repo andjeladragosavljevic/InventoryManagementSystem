@@ -1,10 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using InventoryManagementSystem.DataAccess;
-using InventoryManagementSystem.Models;
-
-namespace InventoryManagementSystem.Controllers
+﻿namespace InventoryManagementSystem.Controllers
 {
     [ApiController]
     [Route("api/controller")]
@@ -75,52 +69,46 @@ namespace InventoryManagementSystem.Controllers
         }
 
         [HttpPut("edit")]
-        public IActionResult EditArtikl(ArtiklEditDTO req)
+        public IActionResult EditArtikl(ArtiklEditDTO request)
         {
-            var old = _db.Artikli.Where(a => a.Id == req.Id).SingleOrDefault();
-            var atributi = _db.AtributiUArtiklu.Where(a => a.ArtiklID == req.Id).ToList();
-            if (old != null)
+            var oldArticle = _db.Artikli.FirstOrDefault(a => a.Id == request.Id);
+
+            if (oldArticle is null)
+                return BadRequest();
+
+            oldArticle.Code = request.Code;
+            oldArticle.Name = request.Name;
+            oldArticle.MeasuringUnit = request.MeasuringUnit;
+
+            if (request.Attributes is not null)
             {
-                old.Code = req.Code;
-                old.Name = req.Name;
-                old.MeasuringUnit = req.MeasuringUnit;
 
-                if (req.Atributs != null)
+                foreach (var attribute in request.Attributes)
                 {
-                    foreach (var atr in req.Atributs)
+                    var oldAttribute = _db.AtributiUArtiklu.Find(attribute.AtributID, request.Id);
+
+                    switch (oldAttribute)
                     {
-                        var oldAtribut = _db.AtributiUArtiklu.Find(atr.AtributID, req.Id);
-
-                        if (oldAtribut != null && atr.Value != null)
-                        {
-                            oldAtribut.Value = atr.Value;
-                        }
-                        else
-                        {
-                            var atribut = _db.Atributi.Find(atr.AtributID);
-
-                            if (atribut != null && atr.Value != null)
+                        case not null when attribute.Value is not null: oldAttribute.Value = attribute.Value; break;
+                        case null when attribute.Value is not null && _db.Atributi.Find(attribute.AtributID) is var existingAttribute and not null:
+                            var newAttributeInArticle = new AtributUArtiklu()
                             {
-                                var newAtribut = new AtributUArtiklu()
-                                {
-                                    Artikl = old,
-                                    Atribut = atribut,
-                                    ArtiklID = old.Id,
-                                    AtributID = atribut.Id,
-                                    Value = atr.Value
-                                };
-                                _db.AtributiUArtiklu.Add(newAtribut);
-                            }
-
-
-                        }
+                                Artikl = oldArticle,
+                                Atribut = existingAttribute,
+                                ArtiklID = oldArticle.Id,
+                                AtributID = existingAttribute.Id,
+                                Value = attribute.Value
+                            };
+                            _db.AtributiUArtiklu.Add(newAttributeInArticle);
+                            break;
                     }
-                }
 
-                _db.SaveChanges();
-                return Ok();
+                }
             }
-            return BadRequest();
+
+            _db.SaveChanges();
+            return Ok();
+
 
         }
 
