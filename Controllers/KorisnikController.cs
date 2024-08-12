@@ -18,7 +18,7 @@ namespace InventoryManagementSystem.Controllers
 
             if (req.Email != null && req.Password != null && req.RepeatedPassword != null && req.Password.Equals(req.RepeatedPassword))
             {
-                var userExists = db.Korisnici.Where(k => k.Email == req.Email).FirstOrDefault();
+                var userExists = db.Users.Where(k => k.Email == req.Email).FirstOrDefault();
                 if (userExists == null)
                 {
                     byte[] salt;
@@ -35,7 +35,7 @@ namespace InventoryManagementSystem.Controllers
                             PasswordSalt = salt
                         };
 
-                        await db.Korisnici.AddAsync(korisnik);
+                        await db.Users.AddAsync(korisnik);
 
                         await db.SaveChangesAsync();
 
@@ -52,7 +52,7 @@ namespace InventoryManagementSystem.Controllers
         public IActionResult Login(KorisnikLoginDTO req)
         {
 
-            var korisnik = db.Korisnici.Where(k => k.Email == req.Email).FirstOrDefault() as Korisnik;
+            var korisnik = db.Users.Where(k => k.Email == req.Email).FirstOrDefault() as Korisnik;
 
             if (korisnik != null && req.Password != null)
             {
@@ -150,7 +150,7 @@ namespace InventoryManagementSystem.Controllers
         [HttpGet("get")]
         public async Task<IActionResult> GetKorisnici()
         {
-            return Ok(await db.Korisnici.ToListAsync());
+            return Ok(await db.Users.ToListAsync());
 
         }
     }

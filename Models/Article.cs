@@ -2,18 +2,18 @@
 
 namespace InventoryManagementSystem.Models
 {
-    public class Artikl
+    public class Article
     {
         public int Id { get; set; }
 
         [MaxLength(20)]
-        public string? Code { get; set; } // Sifra
+        public required string Code { get; set; } 
 
         [MaxLength(50)]
-        public string? Name { get; set; }
+        public required string Name { get; set; }
 
         [MaxLength(20)]
-        public string? MeasuringUnit { get; set; }
+        public required string MeasuringUnit { get; set; }
 
         public List<AtributUArtiklu>? AtributiUArtiklu { get; set; }
 

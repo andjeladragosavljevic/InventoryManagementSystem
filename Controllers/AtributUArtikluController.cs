@@ -9,17 +9,17 @@
         [HttpGet("atribut/get")]
         public async Task<ActionResult> GetAtributUArtiklu()
         {
-            var artikli = await db.AtributiUArtiklu.ToListAsync();
+            var artikli = await db.AttributesInArticle.ToListAsync();
             return Ok(artikli);
         }
 
         [HttpDelete("atribut/delete")]
         public ActionResult deleteAtributUArtiklu(int AtributID, int ArtiklID)
         {
-            var atribut = db.AtributiUArtiklu.Find(AtributID, ArtiklID);
+            var atribut = db.AttributesInArticle.Find(AtributID, ArtiklID);
             if (atribut == null)
                 return NotFound();
-            db.AtributiUArtiklu.Remove(atribut);
+            db.AttributesInArticle.Remove(atribut);
             db.SaveChanges(true);
             return Ok();
         }

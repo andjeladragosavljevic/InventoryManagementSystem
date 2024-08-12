@@ -7,10 +7,10 @@ namespace InventoryManagementSystem.DataAccess
     {
         protected Context() { }
         public Context(DbContextOptions options) : base(options) { }
-        public DbSet<Korisnik> Korisnici { get; set; }
-        public DbSet<Atribut> Atributi { get; set; }
-        public DbSet<Artikl> Artikli { get; set; }
-        public DbSet<AtributUArtiklu> AtributiUArtiklu { get; set; }
+        public DbSet<Korisnik> Users { get; set; }
+        public DbSet<Attribute> Attributes { get; set; }
+        public DbSet<Article> Articles { get; set; }
+        public DbSet<AtributUArtiklu> AttributesInArticle { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
