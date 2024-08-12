@@ -3,15 +3,11 @@
     [ApiController]
     [Route("api/controller")]
     //[Authorize]
-    public class ArtiklController : Controller
+    public class ArtiklController(Context db) : Controller
     {
-        private readonly Context _db;
+        private readonly Context _db = db;
 
-        public ArtiklController(Context db)
-        {
-            _db = db;
-        }
-
+   
 
         [HttpPost("add")]
         public IActionResult AddArtikl(ArtiklDTO request)

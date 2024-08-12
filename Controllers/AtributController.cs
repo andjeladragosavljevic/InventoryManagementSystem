@@ -7,19 +7,12 @@ namespace InventoryManagementSystem.Controllers
     [ApiController]
     [Route("api/[controller]")]
    // [Authorize]
-    public class AtributController : Controller
+    public class AtributController(Context db) : Controller
     {
-        private readonly Context _db;
-
-        public AtributController(Context db)
-        {
-            _db = db;
-        }
-
         [HttpPost("add")]
         public IActionResult AddAtribut(AtributDTO req)
         {
-            var atributi = _db.Atributi.Where(a => a.AttributName == req.Name);
+            var atributi = db.Atributi.Where(a => a.AttributName == req.Name);
             if (atributi.IsNullOrEmpty() && req.Name != null)
             {
                 var atribut = new Atribut()
@@ -27,8 +20,8 @@ namespace InventoryManagementSystem.Controllers
                     AttributName = req.Name
                 };
 
-                _db.Atributi.Add(atribut);
-                _db.SaveChanges();
+                db.Atributi.Add(atribut);
+                db.SaveChanges();
 
                 return Ok(atribut);
             }
@@ -38,7 +31,7 @@ namespace InventoryManagementSystem.Controllers
         [HttpGet("get")]
         public async Task<IActionResult> GetAtributi()
         {
-            return Ok(await _db.Atributi.ToListAsync());
+            return Ok(await db.Atributi.ToListAsync());
         }
 
     }

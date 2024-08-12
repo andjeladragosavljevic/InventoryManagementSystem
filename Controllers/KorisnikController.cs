@@ -8,18 +8,9 @@ namespace InventoryManagementSystem.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class KorisnikController : Controller
+    public class KorisnikController(Context db, IConfiguration configuration) : Controller
     {
-        private readonly Context _db;
-        private readonly IConfiguration _configuration;
-
         public static Korisnik LoggedinUser = new Korisnik();
-
-        public KorisnikController(Context db, IConfiguration configuration)
-        {
-            _db = db;
-            _configuration = configuration;
-        }
 
         [HttpPost("registration")]
         public async Task<IActionResult> AddKorisnik(KorisnikDTO req)
@@ -27,7 +18,7 @@ namespace InventoryManagementSystem.Controllers
 
             if (req.Email != null && req.Password != null && req.RepeatedPassword != null && req.Password.Equals(req.RepeatedPassword))
             {
-                var userExists = _db.Korisnici.Where(k => k.Email == req.Email).FirstOrDefault();
+                var userExists = db.Korisnici.Where(k => k.Email == req.Email).FirstOrDefault();
                 if (userExists == null)
                 {
                     byte[] salt;
@@ -44,9 +35,9 @@ namespace InventoryManagementSystem.Controllers
                             PasswordSalt = salt
                         };
 
-                        await _db.Korisnici.AddAsync(korisnik);
+                        await db.Korisnici.AddAsync(korisnik);
 
-                        await _db.SaveChangesAsync();
+                        await db.SaveChangesAsync();
 
                         return Ok(korisnik);
                     }
@@ -61,7 +52,7 @@ namespace InventoryManagementSystem.Controllers
         public IActionResult Login(KorisnikLoginDTO req)
         {
 
-            var korisnik = _db.Korisnici.Where(k => k.Email == req.Email).FirstOrDefault() as Korisnik;
+            var korisnik = db.Korisnici.Where(k => k.Email == req.Email).FirstOrDefault() as Korisnik;
 
             if (korisnik != null && req.Password != null)
             {
@@ -129,7 +120,7 @@ namespace InventoryManagementSystem.Controllers
              };
 
             var exp = DateTime.Now.AddMinutes(60);
-            var value = _configuration.GetSection("AppSettings:Token").Value;
+            var value = configuration.GetSection("AppSettings:Token").Value;
             if (value != null)
             {
                 var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(value));
@@ -159,7 +150,7 @@ namespace InventoryManagementSystem.Controllers
         [HttpGet("get")]
         public async Task<IActionResult> GetKorisnici()
         {
-            return Ok(await _db.Korisnici.ToListAsync());
+            return Ok(await db.Korisnici.ToListAsync());
 
         }
     }
