@@ -1,4 +1,4 @@
-﻿namespace InventoryManagementSystem
+﻿namespace InventoryManagementSystem.Models.DTO
 {
     public record AttributeDTO
     {

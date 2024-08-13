@@ -2,25 +2,27 @@
 {
 
     [ApiController]
-    [Route("api/controller")]
+    [Route("api/[controller]")]
    // [Authorize]
-    public class AtributUArtikluController(Context db) : Controller
+    public class AttributeInArticleController(Context db) : Controller
     {
-        [HttpGet("atribut/get")]
-        public async Task<ActionResult> GetAtributUArtiklu()
+        [HttpGet]
+        public async Task<ActionResult> GetAttributesInArticleAsync()
         {
-            var artikli = await db.AttributesInArticle.ToListAsync();
-            return Ok(artikli);
+            var articles = await db.AttributesInArticle.ToListAsync();
+            return Ok(articles);
         }
 
-        [HttpDelete("atribut/delete")]
-        public ActionResult deleteAtributUArtiklu(int AtributID, int ArtiklID)
+        [HttpDelete]
+        public ActionResult DeleteAttributeInArticle(int AttributeID, int ArticleID)
         {
-            var atribut = db.AttributesInArticle.Find(AtributID, ArtiklID);
-            if (atribut == null)
+            var attribute = db.AttributesInArticle.Find(AttributeID, ArticleID);
+
+            if (attribute is null)
                 return NotFound();
-            db.AttributesInArticle.Remove(atribut);
-            db.SaveChanges(true);
+
+            db.AttributesInArticle.Remove(attribute);
+            db.SaveChanges();
             return Ok();
         }
 
