@@ -10,7 +10,6 @@
 - [Usage](#usage)
 - [Controllers](#controllers)
 - [Database](#database)
-- [License](#license)
 
 ## Overview
 InventoryManagementSystem is a web application developed using ASP.NET Core and Entity Framework Core. The application allows users to register accounts, log in, and manage inventory items. The system also supports adding, updating, and deleting items and their attributes.
