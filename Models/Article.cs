@@ -15,7 +15,7 @@ namespace InventoryManagementSystem.Models
         [MaxLength(20)]
         public required string MeasuringUnit { get; set; }
 
-        public List<AtributUArtiklu>? AtributiUArtiklu { get; set; }
+        public List<AttributeInArticle>? AttributeInArticles { get; set; }
 
     }
 }

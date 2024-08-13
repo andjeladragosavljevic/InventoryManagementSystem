@@ -2,7 +2,7 @@
 {
     [ApiController]
     [Route("api/[controller]")]
-    //[Authorize]
+    [Authorize]
     public class ArticleController(Context db) : Controller
     {
 
@@ -22,18 +22,18 @@
 
             if (request.Attributes is not null)
             {
-                var attributes = new List<AtributUArtiklu>();
+                var attributes = new List<AttributeInArticle>();
                 foreach (var attribute in request.Attributes)
                 {
                   
                     if (db.Attributes.Find(attribute.AtributID) is var existingAttribute and not null && attribute.Value is not null)
                     {
-                        var attributeInArticle = new AtributUArtiklu()
+                        var attributeInArticle = new AttributeInArticle()
                         {
-                            Atribut = existingAttribute,
-                            AtributID = attribute.AtributID,
-                            Artikl = article,
-                            ArtiklID = article.Id,
+                            Attribute = existingAttribute,
+                            AttributeID = attribute.AtributID,
+                            Article = article,
+                            ArticleID = article.Id,
                             Value = attribute.Value
 
                         };
@@ -87,12 +87,12 @@
                     {
                         case not null when attribute.Value is not null: oldAttribute.Value = attribute.Value; break;
                         case null when attribute.Value is not null && db.Attributes.Find(attribute.AtributID) is var existingAttribute and not null:
-                            var newAttributeInArticle = new AtributUArtiklu()
+                            var newAttributeInArticle = new AttributeInArticle()
                             {
-                                Artikl = oldArticle,
-                                Atribut = existingAttribute,
-                                ArtiklID = oldArticle.Id,
-                                AtributID = existingAttribute.Id,
+                                Article = oldArticle,
+                                Attribute = existingAttribute,
+                                ArticleID = oldArticle.Id,
+                                AttributeID = existingAttribute.Id,
                                 Value = attribute.Value
                             };
                             db.AttributesInArticle.Add(newAttributeInArticle);
@@ -111,14 +111,14 @@
         [HttpGet]
         public async Task<ActionResult> GetAsync()
         {
-            var articles = await db.Articles.Include(a => a.AtributiUArtiklu).AsNoTracking().ToListAsync();
+            var articles = await db.Articles.Include(a => a.AttributeInArticles).AsNoTracking().ToListAsync();
             return Ok(articles);
         }
 
         [HttpGet("/id/{id}")]
         public async Task<ActionResult> GetByIdAsync(int id)
         {
-            var article = await db.Articles.Include(a => a.AtributiUArtiklu).AsNoTracking().SingleOrDefaultAsync(a => a.Id == id);
+            var article = await db.Articles.Include(a => a.AttributeInArticles).AsNoTracking().SingleOrDefaultAsync(a => a.Id == id);
 
             if(article is null) 
                 return NotFound();
@@ -129,7 +129,7 @@
         [HttpGet("/code/{code}")]
         public async Task<ActionResult> GetByCodeAsync(string code)
         {
-            var article = await db.Articles.Include(a => a.AtributiUArtiklu).AsNoTracking().SingleOrDefaultAsync(a => code.Equals(a.Code));
+            var article = await db.Articles.Include(a => a.AttributeInArticles).AsNoTracking().SingleOrDefaultAsync(a => code.Equals(a.Code));
 
             if (article is null)
                 return NotFound();
@@ -140,7 +140,7 @@
         [HttpGet("/measuringUnit")]
         public async Task<ActionResult> GetByMeasuringUnitAsync(string value)
         {
-            var articles = await db.Articles.Include(a => a.AtributiUArtiklu).Where(a => value.Equals(a.MeasuringUnit)).AsNoTracking().ToListAsync();
+            var articles = await db.Articles.Include(a => a.AttributeInArticles).Where(a => value.Equals(a.MeasuringUnit)).AsNoTracking().ToListAsync();
 
             if (articles is null || articles.Count == 0)
                 return NotFound();
@@ -151,7 +151,7 @@
         [HttpGet("/name")]
         public async Task<ActionResult> GetByNameAsync(string value)
         {
-            var articles = await db.Articles.Include(a => a.AtributiUArtiklu).Where(a => value.Equals(a.Name)).AsNoTracking().ToListAsync();
+            var articles = await db.Articles.Include(a => a.AttributeInArticles).Where(a => value.Equals(a.Name)).AsNoTracking().ToListAsync();
 
             if (articles is null || articles.Count == 0)
                 return NotFound();
@@ -162,7 +162,7 @@
         [HttpGet("/attribute/{id}/{value}")]
         public async Task<ActionResult> GetByAttributeAsync(int id, string value)
         {
-            var articles = await db.AttributesInArticle.Include(a => a.Artikl).Where(atr => atr.AtributID.Equals(id) && value.Equals(atr.Value)).Include(a => a.Artikl).AsNoTracking().ToListAsync();
+            var articles = await db.AttributesInArticle.Include(a => a.Article).Where(atr => atr.AttributeID.Equals(id) && value.Equals(atr.Value)).Include(a => a.Article).AsNoTracking().ToListAsync();
            
             if (articles is null || articles.Count == 0)
                 return NotFound();

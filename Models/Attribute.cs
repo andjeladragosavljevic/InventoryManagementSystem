@@ -4,6 +4,6 @@
     {
         public int Id { get; set; }
         public required string AttributeName { get; set; }
-        public List<AtributUArtiklu>? AttributesInArticle { get; set; }
+        public List<AttributeInArticle>? AttributesInArticles { get; set; }
     }
 }

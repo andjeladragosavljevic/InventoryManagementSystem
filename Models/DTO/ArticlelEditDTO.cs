@@ -1,6 +1,4 @@
-﻿using InventoryManagementSystem.Models.DTO;
-
-namespace InventoryManagementSystem
+﻿namespace InventoryManagementSystem
 {
     public class ArticleEditDTO
     {

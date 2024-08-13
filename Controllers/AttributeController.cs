@@ -1,4 +1,6 @@
-﻿namespace InventoryManagementSystem.Controllers
+﻿
+
+namespace InventoryManagementSystem.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]

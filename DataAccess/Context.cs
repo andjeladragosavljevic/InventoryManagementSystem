@@ -7,15 +7,20 @@ namespace InventoryManagementSystem.DataAccess
     {
         protected Context() { }
         public Context(DbContextOptions options) : base(options) { }
-        public DbSet<Korisnik> Users { get; set; }
+        public DbSet<User> Users { get; set; }
         public DbSet<Attribute> Attributes { get; set; }
         public DbSet<Article> Articles { get; set; }
-        public DbSet<AtributUArtiklu> AttributesInArticle { get; set; }
+        public DbSet<AttributeInArticle> AttributesInArticle { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<AtributUArtiklu>()
-                .HasKey(a => new { a.AtributID, a.ArtiklID });
+            modelBuilder.Entity<User>().ToTable("Korisnik");
+            modelBuilder.Entity<Attribute>().ToTable("Atribut");
+            modelBuilder.Entity<Article>().ToTable("Articl");
+            modelBuilder.Entity<AttributeInArticle>().ToTable("AtributUArtiklu");
+
+            modelBuilder.Entity<AttributeInArticle>()
+                    .HasKey(a => new { a.AttributeID, a.ArticleID });
         }
 
     }
