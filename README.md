@@ -1,34 +1,30 @@
 # InventoryManagementSystem
 
-**InventoryManagementSystem** is a project that provides a comprehensive solution for managing inventory items, including users, items, item attributes, and user authentication.
+**InventoryManagementSystem** is an upgraded project providing a comprehensive solution for managing inventory items, including users, items, item attributes, and user authentication.
 
 ## Contents
 
 - [Overview](#overview)
-- [Technologies](#technologies)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Controllers](#controllers)
-- [Database](#database)
-- [License](#license)
+- [Tech Stack](#tech-stack)
+- [Usage/Examples](#usageexamples)
 
 ## Overview
-InventoryManagementSystem is a web application developed using ASP.NET Core and Entity Framework Core. The application allows users to register accounts, log in, and manage inventory items. The system also supports adding, updating, and deleting items and their attributes.
+InventoryManagementSystem is a web application developed using ASP.NET Core (.NET 8) and Entity Framework Core. The application allows users to register accounts, log in, and manage inventory items. The system also supports adding, updating, and deleting items and their attributes.
 
 ## Tech Stack
 
-- **ASP.NET Core** - for developing the web API
+- **ASP.NET Core (.NET 8)** - for developing the web API
 - **Entity Framework Core** - for database operations
 - **MySQL** - as the database management system
 - **JWT** - for authentication and authorization
-
+- **C# 12** - Leveraging new language features for concise and efficient code
 
 ## Usage/Examples
 
 ### Authentication
 
 #### Registration
-- **Endpoint:** `POST /api/Korisnik/registration`
+- **Endpoint:** `POST /api/User/registration`
 - **Request Body:**
     ```json
     {
@@ -54,7 +50,7 @@ InventoryManagementSystem is a web application developed using ASP.NET Core and 
     ```
 
 #### Login
-- **Endpoint:** `POST /api/Korisnik/login`
+- **Endpoint:** `POST /api/User/login`
 - **Request Body:**
     ```json
     {
@@ -72,20 +68,20 @@ InventoryManagementSystem is a web application developed using ASP.NET Core and 
 ### Item
 
 #### Add item
-- **Endpoint:** `POST /api/Artikl/add`
+- **Endpoint:** `POST /api/Article`
 - **Request Body:**
     ```json
     {
       "code": "12345",
       "name": "Sample Item",
       "measuringUnit": "pcs",
-      "atributs": [
+      "attributes": [
         {
-          "atributID": 1,
+          "attributeID": 1,
           "value": "Value1"
         },
         {
-          "atributID": 2,
+          "attributeID": 2,
           "value": "Value2"
         }
       ]
@@ -102,7 +98,7 @@ InventoryManagementSystem is a web application developed using ASP.NET Core and 
     ```
 
 #### Delete item
-- **Endpoint:** `DELETE /api/Artikl/delete`
+- **Endpoint:** `DELETE /api/Article`
 - **Request Parameter:**
     - `id` (int): The ID of the item to be deleted.
 - **Response:**
@@ -116,7 +112,7 @@ InventoryManagementSystem is a web application developed using ASP.NET Core and 
     ```
 
 #### Edit item
-- **Endpoint:** `PUT /api/Artikl/edit`
+- **Endpoint:** `PUT /api/Article`
 - **Request Body:**
     ```json
     {
@@ -124,9 +120,9 @@ InventoryManagementSystem is a web application developed using ASP.NET Core and 
       "code": "12345",
       "name": "Updated Item",
       "measuringUnit": "pcs",
-      "atributs": [
+      "attributes": [
         {
-          "atributID": 1,
+          "attributeID": 1,
           "value": "Updated Value1"
         }
       ]
@@ -135,7 +131,7 @@ InventoryManagementSystem is a web application developed using ASP.NET Core and 
 - **Response:** `200 OK`
 
 #### Get all items
-- **Endpoint:** `GET /api/Artikl/get`
+- **Endpoint:** `GET /api/Article`
 - **Response:**
     ```json
     [
@@ -144,13 +140,13 @@ InventoryManagementSystem is a web application developed using ASP.NET Core and 
         "code": "12345",
         "name": "Sample Item",
         "measuringUnit": "pcs",
-        "atributs": [
+        "attributes": [
           {
-            "atributID": 1,
+            "attributeID": 1,
             "value": "Value1"
           },
           {
-            "atributID": 2,
+            "attributeID": 2,
             "value": "Value2"
           }
         ]
@@ -161,7 +157,7 @@ InventoryManagementSystem is a web application developed using ASP.NET Core and 
 ### Attributes
 
 #### Add attribute
-- **Endpoint:** `POST /api/Atribut/add`
+- **Endpoint:** `POST /api/Attribute`
 - **Request Body:**
     ```json
     {
@@ -172,18 +168,18 @@ InventoryManagementSystem is a web application developed using ASP.NET Core and 
     ```json
     {
       "id": 1,
-      "attributName": "AttributeName"
+      "attributeName": "AttributeName"
     }
     ```
 
 #### Get all attributes
-- **Endpoint:** `GET /api/Atribut/get`
+- **Endpoint:** `GET /api/Attribute`
 - **Response:**
     ```json
     [
       {
         "id": 1,
-        "attributName": "AttributeName"
+        "attributeName": "AttributeName"
       }
     ]
     ```
@@ -191,7 +187,7 @@ InventoryManagementSystem is a web application developed using ASP.NET Core and 
 ### Users
 
 #### Get all users
-- **Endpoint:** `GET /api/Korisnik/get`
+- **Endpoint:** `GET /api/User`
 - **Response:**
     ```json
     [
@@ -204,9 +200,5 @@ InventoryManagementSystem is a web application developed using ASP.NET Core and 
       }
     ]
     ```
-
-
-
-
 
 
